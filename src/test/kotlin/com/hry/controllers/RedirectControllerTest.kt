@@ -17,6 +17,7 @@ import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -45,7 +46,7 @@ class RedirectControllerTest {
     private val HEADER_NAME: String = "Location"
     private val PATH: String = "aAbB"
     private val REDIRECT_STATUS: Int = 302
-    private val BAD_PATH = "/bad"
+    private val BAD_PATH = "bad"
     private val NOT_FOUND: Int = 404
 
     @BeforeAll
@@ -72,6 +73,12 @@ class RedirectControllerTest {
     fun controllerMustReturn404IfBadKey() {
         mockMvc.perform(get("/$BAD_PATH"))
             .andExpect(status().`is`(NOT_FOUND))
+    }
+
+    @Test
+    fun homeWorksFine() {
+        mockMvc.perform(get("/"))
+            .andExpect(MockMvcResultMatchers.view().name("home"))
     }
 
 }

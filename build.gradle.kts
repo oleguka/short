@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.spring") version "1.6.10"
+    jacoco
 }
 
 group = "com.hry"
@@ -32,6 +33,19 @@ dependencies {
     testImplementation("org.dbunit:dbunit:2.7.3")
     testImplementation("com.github.springtestdbunit:spring-test-dbunit:1.3.0")
     testImplementation("com.h2database:h2:2.1.212")
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory.set(layout.buildDirectory.dir("$buildDir/reports/jacoco"))
 }
 
 tasks.withType<KotlinCompile> {

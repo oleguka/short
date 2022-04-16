@@ -18,13 +18,14 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 
-//@WebAppConfiguration
+@WebAppConfiguration
 @TestPropertySource(locations = ["/test.properties"])
 @ExtendWith(SpringExtension::class)
 @SpringBootTest(classes = [ShortApplication::class])
@@ -60,11 +61,27 @@ class AddControllerTest {
 
     @Test
     fun whenUserAddHeTakesAKey() {
-        mockMvc.perform(MockMvcRequestBuilders.post("/add")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jacksonObjectMapper().writeValueAsString(AddController.AddRequest(LINK))))
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jacksonObjectMapper().writeValueAsString(AddController.AddRequest(LINK)))
+        )
             .andExpect(MockMvcResultMatchers.jsonPath("$.key", Matchers.equalTo(KEY)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.link", Matchers.equalTo(LINK)))
+    }
+
+    @Test
+    fun whenUserAddLinkByFormHeTakesWebPage() {
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .post("/addhtml")
+                .param("link", LINK)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        )
+            .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(KEY)))
+            .andExpect(MockMvcResultMatchers.content().string(Matchers.containsString(LINK)))
     }
 
 }
